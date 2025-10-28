@@ -2,6 +2,7 @@ import click
 import logging
 from pathlib import Path
 from create import create_db
+from all_todos import all_todos
 
 
 BASE_DIR = Path.home() / ".todo"
@@ -15,11 +16,28 @@ logging.basicConfig(
 )
 
 
-@click.group()
-
-def cli():
-    """Simple ToDo CLI app using SQLite."""
-    pass
+@click.group(invoke_without_command=True) #bunch of commands, if add invoke_without_command=True without any subcommand cli() run and call
+@click.option("-a","--all", "show_all", is_flag=True , help ="show all todo lists" ) #show_all is a function parameter, -a and --all store in show_all
+@click.pass_context # Allow access to context inside a function 
+def cli(ctx,show_all): # ctx -> Current execution state holder
+    """
+    Simple ToDo CLI app.
+    
+    Use -a or --all for show all todo lists
+    
+    """
+    if ctx.invoked_subcommand is None and not show_all:
+        click.echo(ctx.get_help())
+        return
+    
+    if show_all and ctx.invoked_subcommand is None:
+        todos = all_todos()
+        if todos:
+            click.secho("Available todo lists:" , fg="cyan")
+            for t in todos:
+                click.echo(f"  - {t}")
+        else:
+            click.secho("No Todo list found",fg="yellow") 
 
 
 @cli.command("create")
