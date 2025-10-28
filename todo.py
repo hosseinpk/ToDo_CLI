@@ -1,11 +1,12 @@
 import click
 import logging
-from pathlib import Path
+from pathlib import Path as p
 from create import create_db
 from all_todos import all_todos
+from delete_todo_list import delete_todo
 
 
-BASE_DIR = Path.home() / ".todo"
+BASE_DIR = p.home() / ".todo"
 LOG_FILE = BASE_DIR / "todo.log"
 logging.basicConfig(
     
@@ -41,9 +42,9 @@ def cli(ctx,show_all): # ctx -> Current execution state holder
 
 
 @cli.command("create")
-@click.argument("name", metavar="<db_name>")
+@click.argument("name", metavar="<todo_list_name>")
 @click.option("--force",is_flag=True,help="Overwrite the existing database if it already exists.")
-def create(name:str , force:bool) -> str:
+def create_cli(name:str , force:bool):
     """
     Create a new ToDo list SQLite database.
 
@@ -51,7 +52,7 @@ def create(name:str , force:bool) -> str:
         python todo.py create mylist\n
         python todo.py create mylist --force
     """
-    db_path = Path.home() / ".todo" / f"{name}.db"
+    db_path = p.home() / ".todo" / f"{name}.db"
     
     if db_path.exists():
         if not force:
@@ -72,6 +73,42 @@ def create(name:str , force:bool) -> str:
         click.secho(f" Error creating database: {e}", fg="red")
         logging.error(f" Error creating database: {e}")
         raise click.Abort()
+    
+    
+@cli.command("delete")
+@click.argument("name",metavar="<todo_list_name>")
+@click.option("--force", is_flag=True,help = "delete a todo list")
+def delete_cli(name:str,force:bool):
+    
+    """
+    Delete an existing ToDo list database.
+
+    Example:\n
+        python todo.py delete mylist\n
+        python todo.py delete mylist --force
+    """
+    TODO_FILE = p.home() / ".todo" / f"{name}.db"
+    if not TODO_FILE.exists() :
+        click.secho(f"{name} todo list doesn't exist" , fg="yellow")
+        return
+    if force:
+        delete_todo(name)
+        click.secho(f"{name} todo list deleted successfully" , fg="green")
+        logging.warning(f"{name} todo list deleted successfully")
+    else:
+        confirm = click.confirm(f"Are you sure you want to delete {name} todo list?"
+                      ,default=False,
+                      show_default=True)
+        if not confirm:
+            click.secho(f"Deletion canceled for '{name}",fg="yellow")
+            logging.info(f"Deletion canceled for '{name}")
+            return
+        
+        delete_todo(name)
+        click.secho(f"{name} todo list deleted successfully" , fg="green")
+        logging.info(f"{name} todo list deleted successfully")
+        
+
 
 if __name__ == "__main__":
     cli()
