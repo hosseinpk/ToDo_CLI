@@ -4,6 +4,7 @@ from pathlib import Path as p
 from create import create_db
 from all_todos import all_todos
 from delete_todo_list import delete_todo
+from rename import rename_todo_list
 
 
 BASE_DIR = p.home() / ".todo"
@@ -56,8 +57,8 @@ def create_cli(name:str , force:bool):
     
     if db_path.exists():
         if not force:
-            click.secho(f" Database '{name}.db' already exists.", fg="yellow")
-            logging.warning(f" Database '{name}.db' already exists.")
+            click.secho(f" Database '{name}' already exists.", fg="yellow")
+            logging.warning(f" Database '{name}' already exists.")
             click.secho("   Use --force to overwrite it.", fg="yellow")
             raise click.Abort()
         else:
@@ -67,7 +68,7 @@ def create_cli(name:str , force:bool):
             
     try:
         create_db(name)
-        click.secho(f" {name}.db created successfully in ~/.todo", fg="green")
+        click.secho(f" {name} created successfully in ~/.todo", fg="green")
         logging.info(f" {name}.db created successfully in ~/.todo")
     except Exception as e:
         click.secho(f" Error creating database: {e}", fg="red")
@@ -107,6 +108,22 @@ def delete_cli(name:str,force:bool):
         delete_todo(name)
         click.secho(f"{name} todo list deleted successfully" , fg="green")
         logging.info(f"{name} todo list deleted successfully")
+        
+@cli.command("rename")
+@click.argument("old_name",metavar="<old_name>")
+@click.argument("new_name" ,metavar= "<old_name>")
+
+def rename_cli(old_name:str,new_name:str) -> bool:
+    """
+    Rename an existing ToDo list.
+
+    Example:\n
+        python todo.py rename old_name new_name\n
+        
+    """
+    if rename_todo_list(old_name,new_name):
+        
+        return True
         
 
 
