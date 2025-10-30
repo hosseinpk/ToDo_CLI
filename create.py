@@ -21,7 +21,7 @@ def create_db(name: str) -> str:
         CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
-        desciption text,
+        description text,
         status TEXT DEFAULT 'pending'
         CHECK (status IN ('pending','ongoing','done')),
         create_at DATETIME DEFAULT CURRENT_TIMESTAMP,
