@@ -59,4 +59,4 @@ def add_todo(todo: str, name: str, desc: str | None) -> bool:
     
 
 if __name__ == "__main__":
-    add_todo("hossein","secondtest","test_description")
+    add_todo()
