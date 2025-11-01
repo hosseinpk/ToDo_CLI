@@ -17,6 +17,7 @@ logging.basicConfig(
 )
 click.secho
 
+
 @click.group(
     invoke_without_command=True
 )  # bunch of commands, if add invoke_without_command=True without any subcommand cli() run and call
@@ -85,7 +86,7 @@ def create_cli(name: str, force: bool):
 
 @cli.command("delete")
 @click.argument("name", metavar="<todo_list_name>")
-@click.option("--force", is_flag=True, help="force delete a todo list")
+@click.option("-f", "--force", is_flag=True, help="force delete a todo list")
 def delete_cli(name: str, force: bool):
     """
     Delete an existing ToDo list database.
@@ -132,12 +133,27 @@ def rename_cli(old_name: str, new_name: str) -> bool:
     if rename_todo_list(old_name, new_name):
 
         return True
-    
+
+
 @cli.command("add")
 @click.argument("task_name", metavar="<task_name>")
-@click.option("-l","--list","list_name",required=True,metavar="<list_name>",help="Todo list to add the task to")
-@click.option("-d","--desc","desc",default=None, metavar="<description>",help="add description to the task")
-def add_cli(task_name:str,list_name:str,desc:str | None) -> bool:
+@click.option(
+    "-l",
+    "--list",
+    "list_name",
+    required=True,
+    metavar="<list_name>",
+    help="Todo list to add the task to",
+)
+@click.option(
+    "-d",
+    "--desc",
+    "desc",
+    default=None,
+    metavar="<description>",
+    help="add description to the task",
+)
+def add_cli(task_name: str, list_name: str, desc: str | None) -> bool:
     """
     Add a task to a  list.
 
@@ -148,22 +164,22 @@ def add_cli(task_name:str,list_name:str,desc:str | None) -> bool:
 
     """
     TODO_LIST = p.home() / ".todo" / f"{list_name}.db"
-    
+
     if not list_name:
-        click.secho("you should select a list",fg="yellow")
+        click.secho("you should select a list", fg="yellow")
         return False
     if not task_name:
-        click.secho("you should specify a name for task",fg="yellow")
+        click.secho("you should specify a name for task", fg="yellow")
         return False
 
     if not TODO_LIST.exists():
-        click.secho("no list found",fg="yellow")
+        click.secho("no list found", fg="yellow")
         return False
-    
-    if add_todo(list_name,task_name,desc):
+
+    if add_todo(list_name, task_name, desc):
 
         return True
-    
-    
+
+
 if __name__ == "__main__":
     cli()

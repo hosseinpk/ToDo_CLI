@@ -13,50 +13,49 @@ def db_connection(db_name: p):
 
     except Exception as e:
         logging.exception(f"could not connect to {db_name} : {e}")
-        return  None
-    
+        return None
 
 
 def add_todo(todo: str, name: str, desc: str | None) -> bool:
     TODO_DB = p.home() / ".todo" / f"{todo}.db"
     try:
         if not TODO_DB.exists():
-            click.secho(f"{todo} not exists",fg="yellow")
+            click.secho(f"{todo} not exists", fg="yellow")
             return False
 
         if not is_sqlite_file(TODO_DB):
-            click.secho(f"{todo} is not a todo list",fg="yellow")
+            click.secho(f"{todo} is not a todo list", fg="yellow")
             return False
-                 
+
         conn = db_connection(f"{TODO_DB}")
 
         if not conn:
 
-            return False 
-        
+            return False
+
         add_query = f"""
         INSERT INTO tasks (name,description) VALUES (?,?)
 
         """
-        conn.execute(add_query,(name,desc))
+        conn.execute(add_query, (name, desc))
         click.secho(f"a todo add to list: {todo}", fg="green")
         logging.info(f"a todo add to list: {todo}")
         conn.commit()
         return True
-    
+
     except sqlite3.IntegrityError:
         click.secho(f"A task named '{name}' already exists in '{todo}'!", fg="red")
-        
+
         return False
 
     except Exception as e:
-        click.secho(f"{e} \tunsuccessful add ",fg="yellow")
+        click.secho(f"{e} \tunsuccessful add ", fg="yellow")
         logging.info(f"{e} \tunsuccessful add ")
         return False
-    
+
     finally:
         conn.close()
-    
+
 
 if __name__ == "__main__":
     add_todo()
