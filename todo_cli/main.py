@@ -1,10 +1,10 @@
 import click
 import logging
 from pathlib import Path as p
-from create import create_db
-from all_todos import all_todos
-from delete_todo_list import delete_todo
-from rename import rename_todo_list
+from .create import create_db
+from .all_todos import all_todos
+from .delete_todo_list import delete_todo
+from .rename import rename_todo_list
 
 
 BASE_DIR = p.home() / ".todo"

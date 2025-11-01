@@ -1,5 +1,5 @@
 from pathlib import Path as p
-from all_todos import is_sqlite_file
+from .all_todos import is_sqlite_file
 import logging
 
 
