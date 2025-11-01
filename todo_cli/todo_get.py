@@ -1,7 +1,12 @@
 from pathlib import Path as p
-from .all_todos import is_sqlite_file
-from .add_todo import db_connection
+from todo_cli.all_todos import is_sqlite_file
+from todo_cli.add_todo import db_connection
 import click
+
+
+def color_status(status):
+    colors = {"pending": "yellow", "done": "green", "ongoing": "cyan"}
+    return click.style(status, fg=colors.get(status, "white"))
 
 
 def get_todo(path: str, id: str | None = None) -> bool:
@@ -18,33 +23,56 @@ def get_todo(path: str, id: str | None = None) -> bool:
             click.secho(f"{path} is not a todo list", fg="yellow")
             return False
 
-        conn = db_connection(f"{TODO_DB}")
-
+        conn = db_connection(str(TODO_DB))
         if not conn:
             return False
 
         cursor = conn.cursor()
+
         if id is None:
-            get_query = f"""
-            SELECT * FROM tasks ORDER BY status;
-            """
-            cursor.execute(get_query)
+            cursor.execute("SELECT * FROM tasks ORDER BY status;")
+            todos = cursor.fetchall()
+
+            if not todos:
+                click.secho("No todos found.", fg="yellow")
+                return True
+
+            # Table header
+            click.secho(f"{'ID':<4} {'Title':<20} {'Status':<12} {'Updated'}")
+            click.secho("-" * 60)
+
+            for t in todos:
+                id, title, desc, status, created, updated = t
+                click.echo(
+                    f"{str(id):<4} {title:<20} {color_status(status):<12} {updated}"
+                )
+
         else:
-            get_query = f"""
-            SELECT * FROM tasks WHERE id=(?);
-            """
-            cursor.execute(get_query, (id))
+            cursor.execute("SELECT * FROM tasks WHERE id=(?);", (id,))
+            todo = cursor.fetchone()
 
-        all_todo = cursor.fetchall()
+            if not todo:
+                click.secho("Todo not found.", fg="red")
+                return False
 
-        for todo in all_todo:
-            print(todo)
+            id, title, desc, status, created, updated = todo
+
+            click.secho(
+                f"{'ID':<4} {'Title':<20} {'Description':<25} {'Status':<12} {'Updated'}"
+            )
+            click.secho("-" * 90)
+            click.echo(
+                f"{str(id):<4} {title:<20} {desc:<25} {color_status(status):<12} {updated}"
+            )
+            return True
+
     except Exception as e:
-        print(e)
+        click.secho(str(e), fg="red")
+        return False
+
     finally:
         conn.close()
 
-    return True
 
-if __name__ =="__main__":
-    get_todo("hossein")
+if __name__ == "__main__":
+    get_todo()
