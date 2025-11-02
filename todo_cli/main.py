@@ -224,6 +224,8 @@ def get_cli(list_name: str, task_id: str | None) -> bool:
 
         return True
 
+#todo update [-l|--list <list_name>] [-i|--id <task_id>]  [-s|--status <status>] [-d|--desc <description>]
+#todo remove [-l|--list <list_name>] [-i|--id <task_id>]
 
 if __name__ == "__main__":
     cli()
