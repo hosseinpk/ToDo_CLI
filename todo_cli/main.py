@@ -6,9 +6,18 @@ from .all_todos import all_todos
 from .delete_todo_list import delete_todo
 from .rename import rename_todo_list
 from .add_todo import add_todo
+from todo_cli.todo_get import get_todo
 
-BASE_DIR = p.home() / ".todo"
-LOG_FILE = BASE_DIR / "todo.log"
+
+class Main:
+    def __init__(self):
+        self.TODO = p.home() / ".todo"
+
+
+main_cfg = Main()
+
+
+LOG_FILE = main_cfg.TODO / "todo.log"
 logging.basicConfig(
     filename=LOG_FILE,
     level=logging.INFO,
@@ -61,7 +70,7 @@ def create_cli(name: str, force: bool):
         todo create mylist\n
         todo create mylist --force
     """
-    db_path = p.home() / ".todo" / f"{name}.db"
+    db_path = main_cfg.TODO / f"{name}.db"
 
     if db_path.exists():
         if not force:
@@ -95,7 +104,7 @@ def delete_cli(name: str, force: bool):
         todo delete mylist\n
         todo delete mylist --force
     """
-    TODO_FILE = p.home() / ".todo" / f"{name}.db"
+    TODO_FILE = main_cfg.TODO / f"{name}.db"
     if not TODO_FILE.exists():
         click.secho(f"{name} todo list doesn't exist", fg="yellow")
         return
@@ -163,7 +172,7 @@ def add_cli(task_name: str, list_name: str, desc: str | None) -> bool:
 
 
     """
-    TODO_LIST = p.home() / ".todo" / f"{list_name}.db"
+    TODO_LIST = main_cfg.TODO / f"{list_name}.db"
 
     if not list_name:
         click.secho("you should select a list", fg="yellow")
@@ -177,6 +186,41 @@ def add_cli(task_name: str, list_name: str, desc: str | None) -> bool:
         return False
 
     if add_todo(list_name, task_name, desc):
+
+        return True
+
+
+# todo get [-l|--list <list_name>] [-i|--id <task_id>]
+@cli.command("get")
+@click.option(
+    "-l",
+    "--list",
+    "list_name",
+    required=True,
+    metavar="<list_name>",
+    help="Define Todo list",
+)
+@click.option("-i", "--id", "task_id", required=False, help="get specific task by id")
+def get_cli(list_name: str, task_id: str | None) -> bool:
+    """
+    Get a task from a list.
+
+    Example:\n
+        todo get -l list_name \n
+        todo get -l list_name -i <task_id>
+    """
+
+    TODO_LiST = main_cfg.TODO / f"{list_name}.db"
+
+    if not list_name:
+        click.secho("you should select a list", fg="yellow")
+        return False
+
+    if not TODO_LiST.exists():
+        click.secho("no list found", fg="yellow")
+        return False
+
+    if get_todo(list_name, task_id):
 
         return True
 

@@ -21,11 +21,11 @@ def create_db(name: str) -> str:
         CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
-        description text,
-        status TEXT DEFAULT 'pending'
+        description TEXT DEFAULT '',
+        status TEXT NOT NULL DEFAULT 'pending'
         CHECK (status IN ('pending','ongoing','done')),
-        create_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        update_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        create_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        update_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );"""
 
         cursor.execute(create_todo_table_query)

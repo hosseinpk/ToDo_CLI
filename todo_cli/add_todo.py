@@ -1,5 +1,5 @@
 from pathlib import Path as p
-from .all_todos import is_sqlite_file
+from todo_cli.all_todos import is_sqlite_file
 import sqlite3
 import logging
 import click
@@ -16,8 +16,9 @@ def db_connection(db_name: p):
         return None
 
 
-def add_todo(todo: str, name: str, desc: str | None) -> bool:
+def add_todo(todo: str, name: str, desc: str | None = None) -> bool:
     TODO_DB = p.home() / ".todo" / f"{todo}.db"
+    conn = None
     try:
         if not TODO_DB.exists():
             click.secho(f"{todo} not exists", fg="yellow")
@@ -27,7 +28,7 @@ def add_todo(todo: str, name: str, desc: str | None) -> bool:
             click.secho(f"{todo} is not a todo list", fg="yellow")
             return False
 
-        conn = db_connection(f"{TODO_DB}")
+        conn = db_connection(TODO_DB)
 
         if not conn:
 
@@ -54,7 +55,8 @@ def add_todo(todo: str, name: str, desc: str | None) -> bool:
         return False
 
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 
 if __name__ == "__main__":
