@@ -39,7 +39,7 @@ def get_todo(path: str, todo_id: int | None = None) -> bool:
             todos = cursor.fetchall()
 
             if not todos:
-                click.secho("No todos found.", fg="yellow")
+                click.secho("No Task found.", fg="yellow")
                 return True
 
             click.secho(f"{'ID':<4} {'Title':<20} {'Status':<12} {'Updated'}")

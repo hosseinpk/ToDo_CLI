@@ -1,20 +1,17 @@
 import click
 import logging
 from pathlib import Path as p
-from .create import create_db
-from .all_todos import all_todos
-from .delete_todo_list import delete_todo
-from .rename import rename_todo_list
-from .todo_add import add_todo
+from todo_cli.create import create_db
+from todo_cli.all_todos import all_todos
+from todo_cli.delete_todo_list import delete_todo
+from todo_cli.rename import rename_todo_list
+from todo_cli.todo_add import add_todo
 from todo_cli.todo_get import get_todo
+from todo_cli.todo_update import todo_update
+from todo_cli.main_cfg import Main_CFG
 
 
-class Main:
-    def __init__(self):
-        self.TODO = p.home() / ".todo"
-
-
-main_cfg = Main()
+main_cfg = Main_CFG()
 
 
 LOG_FILE = main_cfg.TODO / "todo.log"
@@ -226,6 +223,52 @@ def get_cli(list_name: str, task_id: str | None) -> bool:
 
 
 # todo update [-l|--list <list_name>] [-i|--id <task_id>]  [-s|--status <status>] [-d|--desc <description>]
+@cli.command("update")
+@click.option(
+    "-l",
+    "--list",
+    "list_name",
+    required=True,
+    metavar="<list_name>",
+    help="Define Todo list",
+)
+@click.option("-i", "--id", "task_id", required=True, help="define specific task by id")
+@click.option(
+    "-s",
+    "--status",
+    "task_status",
+    required=False,
+    help="define new status from 'pending','ongoing','done'",
+)
+@click.option(
+    "-d", "--desc", "task_desc", required=False, help="update new description"
+)
+def update_cli(
+    list_name: str, task_id: str, task_status: str | None, task_desc: str | None
+) -> bool:
+    """
+    Update a task from a list.
+
+    Example:\n
+        todo update -l list_name -i 1 -s done \n
+        todo update -l list_name -i 1 -s done -d new description \n
+
+    """
+    TODO_LiST = main_cfg.TODO / f"{list_name}.db"
+
+    if not list_name:
+        click.secho("you should select a list", fg="yellow")
+        return False
+
+    if not TODO_LiST.exists():
+        click.secho("no list found", fg="yellow")
+        return False
+
+    if todo_update(list_name, task_id, task_status, task_desc):
+
+        return True
+
+
 # todo remove [-l|--list <list_name>] [-i|--id <task_id>]
 
 if __name__ == "__main__":
