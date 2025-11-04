@@ -22,12 +22,12 @@ def todo_update(
     try:
         if not TODO_DB.exists():
             click.secho(f"{todo_name} not exists", fg="yellow")
-            
+
             return False
 
         if not is_sqlite_file(TODO_DB):
             click.secho(f"{todo_name} is not a todo list", fg="yellow")
-            
+
             return False
 
         conn = db_connection(f"{TODO_DB}")
@@ -39,7 +39,7 @@ def todo_update(
 
         if not todo_id:
             click.secho(f"enter valid id from {todo_name}", fg="yellow")
-            
+
             return False
 
         try:
@@ -56,9 +56,9 @@ def todo_update(
                     f"Invalid status, choose one of { ' ,'.join(valid_status)}",
                     fg="red",
                 )
-                
+
                 return False
-            
+
         params = []
         values = []
 
@@ -72,9 +72,9 @@ def todo_update(
             click.secho(
                 "Nothing to update (no --status or --desc provided).", fg="yellow"
             )
-            
+
             return False
-        
+
         params.append("update_at = ?")
         update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         values.append(update_time)
@@ -83,7 +83,7 @@ def todo_update(
         id_check = cursor.execute("SELECT * FROM tasks WHERE id = ?;", (todo_id,))
         if id_check.fetchone() is None:
             click.secho("Task not found.", fg="yellow")
-            
+
             return False
 
         update_query = f"""
