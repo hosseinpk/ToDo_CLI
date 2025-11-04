@@ -1,6 +1,6 @@
 from pathlib import Path as p
 from todo_cli.all_todos import is_sqlite_file
-from todo_cli.add_todo import db_connection
+from todo_cli.todo_add import db_connection
 import click
 
 
@@ -63,14 +63,12 @@ def get_todo(path: str, todo_id: int | None = None) -> bool:
 
             id, title, desc, status, created, updated = todo
             desc_str = desc or ""
-            
 
-            
             click.secho(
                 f"{'ID':<4} {'Title':<20} {'Description':<35} {'Status':<12} {'Updated'}"
             )
             click.secho("-" * 100)
-            
+
             click.echo(
                 f"{str(id):<4} {title:<20} {desc_str:<35} {color_status(status):<12} {updated}"
             )

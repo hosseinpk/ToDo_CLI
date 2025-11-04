@@ -5,7 +5,7 @@ from .create import create_db
 from .all_todos import all_todos
 from .delete_todo_list import delete_todo
 from .rename import rename_todo_list
-from .add_todo import add_todo
+from .todo_add import add_todo
 from todo_cli.todo_get import get_todo
 
 
@@ -224,8 +224,9 @@ def get_cli(list_name: str, task_id: str | None) -> bool:
 
         return True
 
-#todo update [-l|--list <list_name>] [-i|--id <task_id>]  [-s|--status <status>] [-d|--desc <description>]
-#todo remove [-l|--list <list_name>] [-i|--id <task_id>]
+
+# todo update [-l|--list <list_name>] [-i|--id <task_id>]  [-s|--status <status>] [-d|--desc <description>]
+# todo remove [-l|--list <list_name>] [-i|--id <task_id>]
 
 if __name__ == "__main__":
     cli()
