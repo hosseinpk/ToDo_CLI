@@ -9,7 +9,7 @@ from todo_cli.create import Status
 main_cfg = Main_CFG()
 
 
-def todo_update(
+def update_todo(
     todo_name: str,
     todo_id: str,
     todo_status: str | None = None,
@@ -80,7 +80,7 @@ def todo_update(
         values.append(update_time)
         values.append(todo_id)
 
-        id_check = cursor.execute("SELECT * FROM tasks WHERE id = ?;", (todo_id,))
+        id_check = cursor.execute("SELECT id FROM tasks WHERE id = ?;", (todo_id,))
         if id_check.fetchone() is None:
             click.secho("Task not found.", fg="yellow")
 
@@ -99,7 +99,7 @@ def todo_update(
 
     except Exception as e:
         click.secho(f"{e}", fg="red")
-        logging.info(f"{e}")
+        logging.error(f"{e}")
         return False
 
     finally:
@@ -109,4 +109,4 @@ def todo_update(
 
 if __name__ == "__main__":
 
-    todo_update()
+    update_todo()

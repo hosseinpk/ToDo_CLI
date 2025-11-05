@@ -7,7 +7,8 @@ from todo_cli.delete_todo_list import delete_todo
 from todo_cli.rename import rename_todo_list
 from todo_cli.todo_add import add_todo
 from todo_cli.todo_get import get_todo
-from todo_cli.todo_update import todo_update
+from todo_cli.todo_update import update_todo
+from todo_cli.todo_delete import remove_todo
 from todo_cli.main_cfg import Main_CFG
 
 
@@ -264,12 +265,51 @@ def update_cli(
         click.secho("no list found", fg="yellow")
         return False
 
-    if todo_update(list_name, task_id, task_status, task_desc):
+    if update_todo(list_name, task_id, task_status, task_desc):
 
         return True
 
 
 # todo remove [-l|--list <list_name>] [-i|--id <task_id>]
+@cli.command("remove")
+@click.option(
+    "-l",
+    "--list",
+    "list_name",
+    required=True,
+    metavar="<list_name>",
+    help="Define a todo list",
+)
+@click.option("-i", "--id", "task_id", required=True, help="specify an id to delete")
+@click.option("-f", "--force", "force", is_flag=True, help="force delete a task")
+def remove_cli(list_name: str, task_id: str, force: bool) -> bool:
+    """
+    Remove a task from a list.
+
+    Example:\n
+        todo remove -l list_name -i 1  \n
+        todo update -l list_name -i 1 -f,--force \n
+    """
+
+    TODO_LIST = main_cfg.TODO / f"{list_name}.db"
+
+    if not force:
+        confirm = click.confirm(
+            f"are you sure you want delete task {task_id} ?",
+            default=False,
+            show_default=True,
+        )
+        if confirm:
+            remove_todo(list_name, task_id)
+            return True
+        else:
+            click.secho("deletion canceled by user", fg="yellow")
+            return False
+    else:
+        remove_todo(list_name, task_id)
+
+        return True
+
 
 if __name__ == "__main__":
     cli()
