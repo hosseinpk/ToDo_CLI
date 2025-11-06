@@ -16,13 +16,14 @@ main_cfg = Main_CFG()
 
 
 LOG_FILE = main_cfg.TODO / "todo.log"
+if not main_cfg.TODO.exists():
+    main_cfg.TODO.mkdir(parents=True,exist_ok=True)
 logging.basicConfig(
     filename=LOG_FILE,
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-click.secho
 
 
 @click.group(
